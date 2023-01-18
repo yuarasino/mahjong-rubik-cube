@@ -29,6 +29,8 @@ import {
   rotateMd,
   rotateE,
   rotateEd,
+  rotateS,
+  rotateSd,
 } from "@/lib/cube"
 import styles from "@/styles/Cube.module.css"
 
@@ -154,12 +156,12 @@ const Cube = () => {
       />
       <PieceButton
         pbi={16}
-        func={() => rotateE(character, rotation, setCharacter, setRotation)}
+        func={() => rotateS(character, rotation, setCharacter, setRotation)}
         transform="translateX(117px) translateY(169px) rotateX(-45deg) rotateY(45deg) rotateZ(180deg)"
       />
       <PieceButton
         pbi={17}
-        func={() => rotateE(character, rotation, setCharacter, setRotation)}
+        func={() => rotateSd(character, rotation, setCharacter, setRotation)}
         transform="translateX(-12px) translateY(-55px) rotateX(45deg) rotateY(0deg) rotateZ(-45deg)"
       />
     </div>
