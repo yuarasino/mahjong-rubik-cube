@@ -1,0 +1,19 @@
+.main {
+  height: 100wh;
+}
+
+.container {
+  margin: 0 auto;
+  padding: 0 1rem;
+  width: 100%;
+}
+
+.title {
+  margin: 1rem 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.cubeWrapper {
+  margin: 1rem 0;
+}
