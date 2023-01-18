@@ -69,3 +69,22 @@
   font-size: 1rem;
   line-height: 1;
 }
+
+.uiButton {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 150px;
+  left: 150px;
+  padding-top: 0.2em;
+  width: 100px;
+  height: 30px;
+  border: 1px solid #777777;
+  border-radius: 4px;
+  background-color: #88ff88;
+  font-weight: bold;
+  font-size: 1rem;
+  line-height: 1;
+}

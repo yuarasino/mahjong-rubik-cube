@@ -31,6 +31,8 @@ import {
   rotateEd,
   rotateS,
   rotateSd,
+  shuffle,
+  reset,
 } from "@/lib/cube"
 import styles from "@/styles/Cube.module.css"
 
@@ -164,6 +166,18 @@ const Cube = () => {
         func={() => rotateSd(character, rotation, setCharacter, setRotation)}
         transform="translateX(-12px) translateY(-55px) rotateX(45deg) rotateY(0deg) rotateZ(-45deg)"
       />
+      <UIButton
+        ubi={0}
+        text="シャッフル"
+        func={() => shuffle(character, rotation, setCharacter, setRotation)}
+        transform="translateX(-35px) translateY(300px)"
+      />
+      <UIButton
+        ubi={1}
+        text="リセット"
+        func={() => reset(setCharacter, setRotation)}
+        transform="translateX(85px) translateY(300px)"
+      />
     </div>
   )
 }
@@ -240,6 +254,30 @@ const PieceButton = ({
       style={style}
     >
       <span>↑</span>
+    </button>
+  )
+}
+
+const UIButton = ({
+  ubi,
+  text,
+  transform,
+  func,
+}: {
+  ubi: number
+  text: string
+  transform: string
+  func: () => void
+}) => {
+  const style = { transform: transform }
+  return (
+    <button
+      key={`ubi_${ubi}`}
+      className={styles.uiButton}
+      onClick={func}
+      style={style}
+    >
+      <span>{text}</span>
     </button>
   )
 }

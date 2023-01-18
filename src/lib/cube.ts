@@ -170,6 +170,7 @@ export const rotateXd = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateX = (
@@ -197,6 +198,7 @@ export const rotateX = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateYd = (
@@ -224,6 +226,7 @@ export const rotateYd = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateY = (
@@ -251,6 +254,7 @@ export const rotateY = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateZ = (
@@ -278,6 +282,7 @@ export const rotateZ = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateZd = (
@@ -305,6 +310,7 @@ export const rotateZd = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateU = (
@@ -346,6 +352,7 @@ export const rotateU = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateUd = (
@@ -387,6 +394,7 @@ export const rotateUd = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateF = (
@@ -428,6 +436,7 @@ export const rotateF = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateFd = (
@@ -469,6 +478,7 @@ export const rotateFd = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateR = (
@@ -510,6 +520,7 @@ export const rotateR = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateRd = (
@@ -551,6 +562,7 @@ export const rotateRd = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateD = (
@@ -592,6 +604,7 @@ export const rotateD = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateDd = (
@@ -633,6 +646,7 @@ export const rotateDd = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateB = (
@@ -674,6 +688,7 @@ export const rotateB = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateBd = (
@@ -715,6 +730,7 @@ export const rotateBd = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateL = (
@@ -756,6 +772,7 @@ export const rotateL = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateLd = (
@@ -797,6 +814,7 @@ export const rotateLd = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateM = (
@@ -836,6 +854,7 @@ export const rotateM = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateMd = (
@@ -875,6 +894,7 @@ export const rotateMd = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateE = (
@@ -914,6 +934,7 @@ export const rotateE = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateEd = (
@@ -953,6 +974,7 @@ export const rotateEd = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateS = (
@@ -992,6 +1014,7 @@ export const rotateS = (
 
   setCharacter(characterNext)
   setRotation(rotationNext)
+  return [characterNext, rotationNext]
 }
 
 export const rotateSd = (
@@ -1029,6 +1052,60 @@ export const rotateSd = (
   rotationNext[5][4] = rotateRotFd(rotation[0][4])
   rotationNext[5][7] = rotateRotFd(rotation[0][3])
 
+  setCharacter(characterNext)
+  setRotation(rotationNext)
+  return [characterNext, rotationNext]
+}
+
+export const shuffle = (
+  character: string[][],
+  rotation: string[][],
+  setCharacter: Dispatch<SetStateAction<string[][]>>,
+  setRotation: Dispatch<SetStateAction<string[][]>>
+) => {
+  let characterNext = cloneDeep(character)
+  let rotationNext = cloneDeep(rotation)
+  const funcs = [
+    rotateU,
+    rotateUd,
+    rotateF,
+    rotateFd,
+    rotateR,
+    rotateRd,
+    rotateD,
+    rotateDd,
+    rotateB,
+    rotateBd,
+    rotateL,
+    rotateLd,
+    rotateM,
+    rotateMd,
+    rotateE,
+    rotateEd,
+    rotateS,
+    rotateSd,
+  ]
+  reset(setCharacter, setRotation)
+
+  for (let i = 0; i < 25; i++) {
+    let r = Math.floor(Math.random() * funcs.length)
+    ;[characterNext, rotationNext] = funcs[r](
+      characterNext,
+      rotationNext,
+      setCharacter,
+      setRotation
+    )
+  }
+  setCharacter(characterNext)
+  setRotation(rotationNext)
+}
+
+export const reset = (
+  setCharacter: Dispatch<SetStateAction<string[][]>>,
+  setRotation: Dispatch<SetStateAction<string[][]>>
+) => {
+  const characterNext = cloneDeep(initialCharacter)
+  const rotationNext = cloneDeep(initialRotation)
   setCharacter(characterNext)
   setRotation(rotationNext)
 }
