@@ -726,26 +726,33 @@ export const rotateL = (
   const characterNext = cloneDeep(character)
   const rotationNext = cloneDeep(rotation)
 
-  // characterNext[3] = rotateCharMatFd(character[3])
-  // rotationNext[3] = rotateRotMatFd(rotation[3])
-  // characterNext[0][2] = character[4][6]
-  // characterNext[0][5] = character[4][3]
-  // characterNext[0][8] = character[4][0]
-  // rotationNext[0][2] = rotateRotF2(rotation[4][6])
-  // rotationNext[0][5] = rotateRotF2(rotation[4][3])
-  // rotationNext[0][8] = rotateRotF2(rotation[4][0])
-  // characterNext[1][2] = character[0][2]
-  // characterNext[1][5] = character[0][5]
-  // characterNext[1][8] = character[0][8]
-  // characterNext[2][2] = character[1][2]
-  // characterNext[2][5] = character[1][5]
-  // characterNext[2][8] = character[1][8]
-  // characterNext[4][0] = character[2][8]
-  // characterNext[4][3] = character[2][5]
-  // characterNext[4][6] = character[2][2]
-  // rotationNext[4][0] = rotateRotF2(rotation[2][8])
-  // rotationNext[4][3] = rotateRotF2(rotation[2][5])
-  // rotationNext[4][6] = rotateRotF2(rotation[2][2])
+  characterNext[5] = rotateCharMatF(character[5])
+  characterNext[0][0] = character[4][8]
+  characterNext[0][3] = character[4][5]
+  characterNext[0][6] = character[4][2]
+  characterNext[1][0] = character[0][0]
+  characterNext[1][3] = character[0][3]
+  characterNext[1][6] = character[0][6]
+  characterNext[2][0] = character[1][0]
+  characterNext[2][3] = character[1][3]
+  characterNext[2][6] = character[1][6]
+  characterNext[4][2] = character[2][6]
+  characterNext[4][5] = character[2][3]
+  characterNext[4][8] = character[2][0]
+
+  rotationNext[5] = rotateRotMatFd(rotateCharMatFd(rotation[5]))
+  rotationNext[0][0] = rotateRotF2(rotation[4][8])
+  rotationNext[0][3] = rotateRotF2(rotation[4][5])
+  rotationNext[0][6] = rotateRotF2(rotation[4][2])
+  rotationNext[1][0] = rotation[0][0]
+  rotationNext[1][3] = rotation[0][3]
+  rotationNext[1][6] = rotation[0][6]
+  rotationNext[2][0] = rotation[1][0]
+  rotationNext[2][3] = rotation[1][3]
+  rotationNext[2][6] = rotation[1][6]
+  rotationNext[4][2] = rotateRotF2(rotation[2][6])
+  rotationNext[4][5] = rotateRotF2(rotation[2][3])
+  rotationNext[4][8] = rotateRotF2(rotation[2][0])
 
   setCharacter(characterNext)
   setRotation(rotationNext)
@@ -760,26 +767,33 @@ export const rotateLd = (
   const characterNext = cloneDeep(character)
   const rotationNext = cloneDeep(rotation)
 
-  // characterNext[3] = rotateCharMatFd(character[3])
-  // rotationNext[3] = rotateRotMatFd(rotation[3])
-  // characterNext[0][2] = character[4][6]
-  // characterNext[0][5] = character[4][3]
-  // characterNext[0][8] = character[4][0]
-  // rotationNext[0][2] = rotateRotF2(rotation[4][6])
-  // rotationNext[0][5] = rotateRotF2(rotation[4][3])
-  // rotationNext[0][8] = rotateRotF2(rotation[4][0])
-  // characterNext[1][2] = character[0][2]
-  // characterNext[1][5] = character[0][5]
-  // characterNext[1][8] = character[0][8]
-  // characterNext[2][2] = character[1][2]
-  // characterNext[2][5] = character[1][5]
-  // characterNext[2][8] = character[1][8]
-  // characterNext[4][0] = character[2][8]
-  // characterNext[4][3] = character[2][5]
-  // characterNext[4][6] = character[2][2]
-  // rotationNext[4][0] = rotateRotF2(rotation[2][8])
-  // rotationNext[4][3] = rotateRotF2(rotation[2][5])
-  // rotationNext[4][6] = rotateRotF2(rotation[2][2])
+  characterNext[5] = rotateCharMatFd(character[5])
+  characterNext[0][0] = character[1][0]
+  characterNext[0][3] = character[1][3]
+  characterNext[0][6] = character[1][6]
+  characterNext[1][0] = character[2][0]
+  characterNext[1][3] = character[2][3]
+  characterNext[1][6] = character[2][6]
+  characterNext[2][0] = character[4][8]
+  characterNext[2][3] = character[4][5]
+  characterNext[2][6] = character[4][2]
+  characterNext[4][2] = character[0][6]
+  characterNext[4][5] = character[0][3]
+  characterNext[4][8] = character[0][0]
+
+  rotationNext[5] = rotateRotMatFd(rotateCharMatFd(rotation[5]))
+  rotationNext[0][0] = rotation[1][0]
+  rotationNext[0][3] = rotation[1][3]
+  rotationNext[0][6] = rotation[1][6]
+  rotationNext[1][0] = rotation[2][0]
+  rotationNext[1][3] = rotation[2][3]
+  rotationNext[1][6] = rotation[2][6]
+  rotationNext[2][0] = rotateRotF2(rotation[4][8])
+  rotationNext[2][3] = rotateRotF2(rotation[4][5])
+  rotationNext[2][6] = rotateRotF2(rotation[4][2])
+  rotationNext[4][2] = rotateRotF2(rotation[0][6])
+  rotationNext[4][5] = rotateRotF2(rotation[0][3])
+  rotationNext[4][8] = rotateRotF2(rotation[0][0])
 
   setCharacter(characterNext)
   setRotation(rotationNext)
