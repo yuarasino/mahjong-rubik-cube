@@ -1,10 +1,46 @@
 import { useState } from "react"
 
-import { getResetCube, getAngle, getColor, getRotateCubeX, getRotateCubeXp, getRotateCubeY, getRotateCubeYp, getRotateCubeZp, getRotateCubeZ, getRotateCubeU, getRotateCubeUp, getRotateCubeF, getRotateCubeFp } from "@/lib/cube"
+import {
+  getResetCube,
+  getShuffleCube,
+  getAngle,
+  getColor,
+  getRotateCubeX,
+  getRotateCubeXp,
+  getRotateCubeY,
+  getRotateCubeYp,
+  getRotateCubeZ,
+  getRotateCubeZp,
+  getRotateCubeR,
+  getRotateCubeRp,
+  getRotateCubeM,
+  getRotateCubeMp,
+  getRotateCubeL,
+  getRotateCubeLp,
+  getRotateCubeU,
+  getRotateCubeUp,
+  getRotateCubeE,
+  getRotateCubeEp,
+  getRotateCubeD,
+  getRotateCubeDp,
+  getRotateCubeF,
+  getRotateCubeFp,
+  getRotateCubeS,
+  getRotateCubeSp,
+  getRotateCubeB,
+  getRotateCubeBp,
+} from "@/lib/cube"
 import styles from "@/styles/Cube.module.css"
 
 const Cube = () => {
   const [cube, setCube] = useState(getResetCube())
+
+  const resetCube = () => {
+    setCube(getResetCube())
+  }
+  const shuffleCube = () => {
+    setCube(getShuffleCube())
+  }
 
   const rotateCubeX = () => {
     setCube(getRotateCubeX(cube))
@@ -25,11 +61,41 @@ const Cube = () => {
     setCube(getRotateCubeZp(cube))
   }
 
+  const rotateCubeR = () => {
+    setCube(getRotateCubeR(cube))
+  }
+  const rotateCubeRp = () => {
+    setCube(getRotateCubeRp(cube))
+  }
+  const rotateCubeM = () => {
+    setCube(getRotateCubeM(cube))
+  }
+  const rotateCubeMp = () => {
+    setCube(getRotateCubeMp(cube))
+  }
+  const rotateCubeL = () => {
+    setCube(getRotateCubeL(cube))
+  }
+  const rotateCubeLp = () => {
+    setCube(getRotateCubeLp(cube))
+  }
   const rotateCubeU = () => {
     setCube(getRotateCubeU(cube))
   }
   const rotateCubeUp = () => {
     setCube(getRotateCubeUp(cube))
+  }
+  const rotateCubeE = () => {
+    setCube(getRotateCubeE(cube))
+  }
+  const rotateCubeEp = () => {
+    setCube(getRotateCubeEp(cube))
+  }
+  const rotateCubeD = () => {
+    setCube(getRotateCubeD(cube))
+  }
+  const rotateCubeDp = () => {
+    setCube(getRotateCubeDp(cube))
   }
   const rotateCubeF = () => {
     setCube(getRotateCubeF(cube))
@@ -37,12 +103,25 @@ const Cube = () => {
   const rotateCubeFp = () => {
     setCube(getRotateCubeFp(cube))
   }
+  const rotateCubeS = () => {
+    setCube(getRotateCubeS(cube))
+  }
+  const rotateCubeSp = () => {
+    setCube(getRotateCubeSp(cube))
+  }
+  const rotateCubeB = () => {
+    setCube(getRotateCubeB(cube))
+  }
+  const rotateCubeBp = () => {
+    setCube(getRotateCubeBp(cube))
+  }
 
   return (
     <div className={styles.cube}>
       {cube.map((face, index) => (
         <Face key={index} face={face} index={index} />
       ))}
+
       <SwitchButton
         key={"X"}
         transform="rotateX(90deg) translateY(-180px)"
@@ -75,6 +154,36 @@ const Cube = () => {
       />
 
       <RotationButton
+        key={"R"}
+        transform="rotateX(90deg) translateX(60px) translateY(-120px)"
+        onClick={rotateCubeR}
+      />
+      <RotationButton
+        key={"Rp"}
+        transform="rotateZ(180deg) translateX(-60px) translateY(-120px)"
+        onClick={rotateCubeRp}
+      />
+      <RotationButton
+        key={"M"}
+        transform="rotateZ(180deg) translateY(-120px)"
+        onClick={rotateCubeM}
+      />
+      <RotationButton
+        key={"Mp"}
+        transform="rotateX(90deg) translateY(-120px)"
+        onClick={rotateCubeMp}
+      />
+      <RotationButton
+        key={"L"}
+        transform="rotateZ(180deg) translateX(60px) translateY(-120px)"
+        onClick={rotateCubeL}
+      />
+      <RotationButton
+        key={"Lp"}
+        transform="rotateX(90deg) translateX(-60px) translateY(-120px)"
+        onClick={rotateCubeLp}
+      />
+      <RotationButton
         key={"U"}
         transform="rotateZ(-90deg) translateX(60px) translateY(-120px)"
         onClick={rotateCubeU}
@@ -83,6 +192,26 @@ const Cube = () => {
         key={"Up"}
         transform="rotateY(90deg) rotateZ(90deg) translateX(-60px) translateY(-120px)"
         onClick={rotateCubeUp}
+      />
+      <RotationButton
+        key={"E"}
+        transform="rotateY(90deg) rotateZ(90deg) translateY(-120px)"
+        onClick={rotateCubeE}
+      />
+      <RotationButton
+        key={"Ep"}
+        transform="rotateZ(-90deg) translateY(-120px)"
+        onClick={rotateCubeEp}
+      />
+      <RotationButton
+        key={"D"}
+        transform="rotateY(90deg) rotateZ(90deg) translateX(60px) translateY(-120px)"
+        onClick={rotateCubeD}
+      />
+      <RotationButton
+        key={"Dp"}
+        transform="rotateZ(-90deg) translateX(-60px) translateY(-120px)"
+        onClick={rotateCubeDp}
       />
       <RotationButton
         key={"F"}
@@ -94,24 +223,55 @@ const Cube = () => {
         transform="rotateX(90deg) rotateZ(-90deg) translateX(-60px) translateY(-120px)"
         onClick={rotateCubeFp}
       />
+      <RotationButton
+        key={"S"}
+        transform="rotateY(90deg) rotateZ(180deg) translateY(-120px)"
+        onClick={rotateCubeS}
+      />
+      <RotationButton
+        key={"Sp"}
+        transform="rotateX(90deg) rotateZ(-90deg) translateY(-120px)"
+        onClick={rotateCubeSp}
+      />
+      <RotationButton
+        key={"B"}
+        transform="rotateX(90deg) rotateZ(-90deg) translateX(60px) translateY(-120px)"
+        onClick={rotateCubeB}
+      />
+      <RotationButton
+        key={"Bp"}
+        transform="rotateY(90deg) rotateZ(180deg) translateX(-60px) translateY(-120px)"
+        onClick={rotateCubeBp}
+      />
+
+      <ActionButton
+        key={"Shuffle"}
+        label={"シャッフル"}
+        transform="translateX(-230px) translateY(-270px)"
+        onClick={shuffleCube}
+      />
+      <ActionButton
+        key={"Reset"}
+        label={"リセット"}
+        transform="translateX(230px) translateY(-270px)"
+        onClick={resetCube}
+      />
     </div>
   )
 }
 
-const Face = ({ face, index }: { face: string[], index: number }) => {
+const Face = ({ face, index }: { face: string[]; index: number }) => {
   const style = {
-    transform: "translateX(-50%) translateY(-50%) rotateX(-45deg) rotateY(-45deg)"
+    transform:
+      "translateX(-50%) translateY(-50%) rotateX(-45deg) rotateY(-45deg)",
   }
   if (index === 0) {
     style.transform += "rotateX(90deg)"
-  }
-  else if (index === 1) {
+  } else if (index === 1) {
     style.transform += ""
-  }
-  else if (index === 3) {
+  } else if (index === 3) {
     style.transform += "rotateY(90deg)"
-  }
-  else {
+  } else {
     return <></>
   }
   return (
@@ -138,26 +298,75 @@ const Piece = ({ piece }: { piece: string }) => {
   )
 }
 
-const SwitchButton = ({ transform, onClick }: { transform: string, onClick: () => void }) => {
+const SwitchButton = ({
+  transform,
+  onClick,
+}: {
+  transform: string
+  onClick: () => void
+}) => {
   const style = {
-    transform: "translateX(-50%) translateY(-50%) rotateX(-45deg) rotateY(-45deg)"
+    transform:
+      "translateX(-50%) translateY(-50%) rotateX(-45deg) rotateY(-45deg)",
   }
   style.transform += transform
   return (
-    <button className={styles.switch} style={style} onClick={onClick}>
+    <button
+      type="button"
+      className={styles.switch}
+      style={style}
+      onClick={onClick}
+    >
       {"↑"}
     </button>
   )
 }
 
-const RotationButton = ({ transform, onClick }: { transform: string, onClick: () => void }) => {
+const RotationButton = ({
+  transform,
+  onClick,
+}: {
+  transform: string
+  onClick: () => void
+}) => {
   const style = {
-    transform: "translateX(-50%) translateY(-50%) rotateX(-45deg) rotateY(-45deg)"
+    transform:
+      "translateX(-50%) translateY(-50%) rotateX(-45deg) rotateY(-45deg)",
   }
   style.transform += transform
   return (
-    <button className={styles.rotation} style={style} onClick={onClick}>
+    <button
+      type="button"
+      className={styles.rotation}
+      style={style}
+      onClick={onClick}
+    >
       {"↑"}
+    </button>
+  )
+}
+
+const ActionButton = ({
+  label,
+  transform,
+  onClick,
+}: {
+  label: string
+  transform: string
+  onClick: () => void
+}) => {
+  const style = {
+    transform: "translateX(-50%) translateY(-50%)",
+  }
+  style.transform += transform
+  return (
+    <button
+      type="button"
+      className={styles.action}
+      style={style}
+      onClick={onClick}
+    >
+      {label}
     </button>
   )
 }

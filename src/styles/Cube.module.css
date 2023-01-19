@@ -65,3 +65,20 @@
   font-size: 1rem;
   transform-origin: center center -90px;
 }
+
+.action {
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 300px;
+  left: 300px;
+  width: 120px;
+  height: 40px;
+  border: 1px solid #777777;
+  background-color: #ccffcc;
+  font-weight: bold;
+  font-size: 1rem;
+  transform-origin: center center -90px;
+}
