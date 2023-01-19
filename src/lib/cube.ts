@@ -359,247 +359,159 @@ export const getRotateCubeBp = (cube: string[][]): string[][] => {
 
 export const getRotateCubeDrag = (
   cube: string[][],
-  fromDrag: { faceIndex: number; pieceIndex: number },
-  toDrag: { faceIndex: number; pieceIndex: number }
+  fromFace: number,
+  fromPiece: number,
+  toFace: number,
+  toPiece: number
 ): string[][] => {
-  if (fromDrag.faceIndex === 0) {
-    if (fromDrag.pieceIndex === 0) {
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 1)
-        cube = getRotateCubeBp(cube)
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 3)
-        cube = getRotateCubeL(cube)
+  if (fromFace === 0) {
+    if (fromPiece === 0) {
+      if (toFace === 0 && toPiece === 1) cube = getRotateCubeBp(cube)
+      if (toFace === 0 && toPiece === 3) cube = getRotateCubeL(cube)
     }
-    if (fromDrag.pieceIndex === 1) {
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 0)
-        cube = getRotateCubeB(cube)
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 2)
-        cube = getRotateCubeBp(cube)
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 4)
-        cube = getRotateCubeM(cube)
+    if (fromPiece === 1) {
+      if (toFace === 0 && toPiece === 0) cube = getRotateCubeB(cube)
+      if (toFace === 0 && toPiece === 2) cube = getRotateCubeBp(cube)
+      if (toFace === 0 && toPiece === 4) cube = getRotateCubeM(cube)
     }
-    if (fromDrag.pieceIndex === 2) {
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 1)
-        cube = getRotateCubeB(cube)
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 5)
-        cube = getRotateCubeRp(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 2)
-        cube = getRotateCubeBp(cube)
+    if (fromPiece === 2) {
+      if (toFace === 0 && toPiece === 1) cube = getRotateCubeB(cube)
+      if (toFace === 0 && toPiece === 5) cube = getRotateCubeRp(cube)
+      if (toFace === 3 && toPiece === 2) cube = getRotateCubeBp(cube)
     }
-    if (fromDrag.pieceIndex === 3) {
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 0)
-        cube = getRotateCubeLp(cube)
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 4)
-        cube = getRotateCubeS(cube)
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 6)
-        cube = getRotateCubeL(cube)
+    if (fromPiece === 3) {
+      if (toFace === 0 && toPiece === 0) cube = getRotateCubeLp(cube)
+      if (toFace === 0 && toPiece === 4) cube = getRotateCubeS(cube)
+      if (toFace === 0 && toPiece === 6) cube = getRotateCubeL(cube)
     }
-    if (fromDrag.pieceIndex === 4) {
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 1)
-        cube = getRotateCubeMp(cube)
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 3)
-        cube = getRotateCubeSp(cube)
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 5)
-        cube = getRotateCubeS(cube)
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 7)
-        cube = getRotateCubeM(cube)
+    if (fromPiece === 4) {
+      if (toFace === 0 && toPiece === 1) cube = getRotateCubeMp(cube)
+      if (toFace === 0 && toPiece === 3) cube = getRotateCubeSp(cube)
+      if (toFace === 0 && toPiece === 5) cube = getRotateCubeS(cube)
+      if (toFace === 0 && toPiece === 7) cube = getRotateCubeM(cube)
     }
-    if (fromDrag.pieceIndex === 5) {
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 2)
-        cube = getRotateCubeR(cube)
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 4)
-        cube = getRotateCubeSp(cube)
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 8)
-        cube = getRotateCubeRp(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 1)
-        cube = getRotateCubeS(cube)
+    if (fromPiece === 5) {
+      if (toFace === 0 && toPiece === 2) cube = getRotateCubeR(cube)
+      if (toFace === 0 && toPiece === 4) cube = getRotateCubeSp(cube)
+      if (toFace === 0 && toPiece === 8) cube = getRotateCubeRp(cube)
+      if (toFace === 3 && toPiece === 1) cube = getRotateCubeS(cube)
     }
-    if (fromDrag.pieceIndex === 6) {
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 3)
-        cube = getRotateCubeLp(cube)
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 7)
-        cube = getRotateCubeF(cube)
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 0)
-        cube = getRotateCubeL(cube)
+    if (fromPiece === 6) {
+      if (toFace === 0 && toPiece === 3) cube = getRotateCubeLp(cube)
+      if (toFace === 0 && toPiece === 7) cube = getRotateCubeF(cube)
+      if (toFace === 1 && toPiece === 0) cube = getRotateCubeL(cube)
     }
-    if (fromDrag.pieceIndex === 7) {
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 4)
-        cube = getRotateCubeMp(cube)
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 6)
-        cube = getRotateCubeFp(cube)
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 8)
-        cube = getRotateCubeF(cube)
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 1)
-        cube = getRotateCubeM(cube)
+    if (fromPiece === 7) {
+      if (toFace === 0 && toPiece === 4) cube = getRotateCubeMp(cube)
+      if (toFace === 0 && toPiece === 6) cube = getRotateCubeFp(cube)
+      if (toFace === 0 && toPiece === 8) cube = getRotateCubeF(cube)
+      if (toFace === 1 && toPiece === 1) cube = getRotateCubeM(cube)
     }
-    if (fromDrag.pieceIndex === 8) {
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 5)
-        cube = getRotateCubeR(cube)
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 7)
-        cube = getRotateCubeFp(cube)
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 2)
-        cube = getRotateCubeRp(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 0)
-        cube = getRotateCubeF(cube)
+    if (fromPiece === 8) {
+      if (toFace === 0 && toPiece === 5) cube = getRotateCubeR(cube)
+      if (toFace === 0 && toPiece === 7) cube = getRotateCubeFp(cube)
+      if (toFace === 1 && toPiece === 2) cube = getRotateCubeRp(cube)
+      if (toFace === 3 && toPiece === 0) cube = getRotateCubeF(cube)
     }
   }
-  if (fromDrag.faceIndex === 1) {
-    if (fromDrag.pieceIndex === 0) {
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 6)
-        cube = getRotateCubeLp(cube)
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 1)
-        cube = getRotateCubeUp(cube)
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 3)
-        cube = getRotateCubeL(cube)
+  if (fromFace === 1) {
+    if (fromPiece === 0) {
+      if (toFace === 0 && toPiece === 6) cube = getRotateCubeLp(cube)
+      if (toFace === 1 && toPiece === 1) cube = getRotateCubeUp(cube)
+      if (toFace === 1 && toPiece === 3) cube = getRotateCubeL(cube)
     }
-    if (fromDrag.pieceIndex === 1) {
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 7)
-        cube = getRotateCubeMp(cube)
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 0)
-        cube = getRotateCubeU(cube)
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 2)
-        cube = getRotateCubeUp(cube)
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 4)
-        cube = getRotateCubeM(cube)
+    if (fromPiece === 1) {
+      if (toFace === 0 && toPiece === 7) cube = getRotateCubeMp(cube)
+      if (toFace === 1 && toPiece === 0) cube = getRotateCubeU(cube)
+      if (toFace === 1 && toPiece === 2) cube = getRotateCubeUp(cube)
+      if (toFace === 1 && toPiece === 4) cube = getRotateCubeM(cube)
     }
-    if (fromDrag.pieceIndex === 2) {
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 8)
-        cube = getRotateCubeR(cube)
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 1)
-        cube = getRotateCubeU(cube)
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 5)
-        cube = getRotateCubeRp(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 0)
-        cube = getRotateCubeUp(cube)
+    if (fromPiece === 2) {
+      if (toFace === 0 && toPiece === 8) cube = getRotateCubeR(cube)
+      if (toFace === 1 && toPiece === 1) cube = getRotateCubeU(cube)
+      if (toFace === 1 && toPiece === 5) cube = getRotateCubeRp(cube)
+      if (toFace === 3 && toPiece === 0) cube = getRotateCubeUp(cube)
     }
-    if (fromDrag.pieceIndex === 3) {
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 0)
-        cube = getRotateCubeLp(cube)
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 4)
-        cube = getRotateCubeE(cube)
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 6)
-        cube = getRotateCubeL(cube)
+    if (fromPiece === 3) {
+      if (toFace === 1 && toPiece === 0) cube = getRotateCubeLp(cube)
+      if (toFace === 1 && toPiece === 4) cube = getRotateCubeE(cube)
+      if (toFace === 1 && toPiece === 6) cube = getRotateCubeL(cube)
     }
-    if (fromDrag.pieceIndex === 4) {
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 1)
-        cube = getRotateCubeLp(cube)
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 3)
-        cube = getRotateCubeEp(cube)
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 5)
-        cube = getRotateCubeE(cube)
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 7)
-        cube = getRotateCubeL(cube)
+    if (fromPiece === 4) {
+      if (toFace === 1 && toPiece === 1) cube = getRotateCubeLp(cube)
+      if (toFace === 1 && toPiece === 3) cube = getRotateCubeEp(cube)
+      if (toFace === 1 && toPiece === 5) cube = getRotateCubeE(cube)
+      if (toFace === 1 && toPiece === 7) cube = getRotateCubeL(cube)
     }
-    if (fromDrag.pieceIndex === 5) {
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 2)
-        cube = getRotateCubeR(cube)
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 4)
-        cube = getRotateCubeEp(cube)
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 8)
-        cube = getRotateCubeRp(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 3)
-        cube = getRotateCubeE(cube)
+    if (fromPiece === 5) {
+      if (toFace === 1 && toPiece === 2) cube = getRotateCubeR(cube)
+      if (toFace === 1 && toPiece === 4) cube = getRotateCubeEp(cube)
+      if (toFace === 1 && toPiece === 8) cube = getRotateCubeRp(cube)
+      if (toFace === 3 && toPiece === 3) cube = getRotateCubeE(cube)
     }
-    if (fromDrag.pieceIndex === 6) {
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 3)
-        cube = getRotateCubeLp(cube)
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 7)
-        cube = getRotateCubeD(cube)
+    if (fromPiece === 6) {
+      if (toFace === 1 && toPiece === 3) cube = getRotateCubeLp(cube)
+      if (toFace === 1 && toPiece === 7) cube = getRotateCubeD(cube)
     }
-    if (fromDrag.pieceIndex === 7) {
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 4)
-        cube = getRotateCubeMp(cube)
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 6)
-        cube = getRotateCubeDp(cube)
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 8)
-        cube = getRotateCubeD(cube)
+    if (fromPiece === 7) {
+      if (toFace === 1 && toPiece === 4) cube = getRotateCubeMp(cube)
+      if (toFace === 1 && toPiece === 6) cube = getRotateCubeDp(cube)
+      if (toFace === 1 && toPiece === 8) cube = getRotateCubeD(cube)
     }
-    if (fromDrag.pieceIndex === 8) {
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 5)
-        cube = getRotateCubeR(cube)
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 7)
-        cube = getRotateCubeDp(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 6)
-        cube = getRotateCubeD(cube)
+    if (fromPiece === 8) {
+      if (toFace === 1 && toPiece === 5) cube = getRotateCubeR(cube)
+      if (toFace === 1 && toPiece === 7) cube = getRotateCubeDp(cube)
+      if (toFace === 3 && toPiece === 6) cube = getRotateCubeD(cube)
     }
   }
-  if (fromDrag.faceIndex === 3) {
-    if (fromDrag.pieceIndex === 0) {
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 8)
-        cube = getRotateCubeFp(cube)
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 2)
-        cube = getRotateCubeU(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 1)
-        cube = getRotateCubeUp(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 3)
-        cube = getRotateCubeF(cube)
+  if (fromFace === 3) {
+    if (fromPiece === 0) {
+      if (toFace === 0 && toPiece === 8) cube = getRotateCubeFp(cube)
+      if (toFace === 1 && toPiece === 2) cube = getRotateCubeU(cube)
+      if (toFace === 3 && toPiece === 1) cube = getRotateCubeUp(cube)
+      if (toFace === 3 && toPiece === 3) cube = getRotateCubeF(cube)
     }
-    if (fromDrag.pieceIndex === 1) {
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 5)
-        cube = getRotateCubeSp(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 0)
-        cube = getRotateCubeU(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 2)
-        cube = getRotateCubeUp(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 4)
-        cube = getRotateCubeS(cube)
+    if (fromPiece === 1) {
+      if (toFace === 0 && toPiece === 5) cube = getRotateCubeSp(cube)
+      if (toFace === 3 && toPiece === 0) cube = getRotateCubeU(cube)
+      if (toFace === 3 && toPiece === 2) cube = getRotateCubeUp(cube)
+      if (toFace === 3 && toPiece === 4) cube = getRotateCubeS(cube)
     }
-    if (fromDrag.pieceIndex === 2) {
-      if (toDrag.faceIndex === 0 && toDrag.pieceIndex === 2)
-        cube = getRotateCubeB(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 1)
-        cube = getRotateCubeU(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 5)
-        cube = getRotateCubeBp(cube)
+    if (fromPiece === 2) {
+      if (toFace === 0 && toPiece === 2) cube = getRotateCubeB(cube)
+      if (toFace === 3 && toPiece === 1) cube = getRotateCubeU(cube)
+      if (toFace === 3 && toPiece === 5) cube = getRotateCubeBp(cube)
     }
-    if (fromDrag.pieceIndex === 3) {
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 5)
-        cube = getRotateCubeEp(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 0)
-        cube = getRotateCubeFp(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 4)
-        cube = getRotateCubeE(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 6)
-        cube = getRotateCubeF(cube)
+    if (fromPiece === 3) {
+      if (toFace === 1 && toPiece === 5) cube = getRotateCubeEp(cube)
+      if (toFace === 3 && toPiece === 0) cube = getRotateCubeFp(cube)
+      if (toFace === 3 && toPiece === 4) cube = getRotateCubeE(cube)
+      if (toFace === 3 && toPiece === 6) cube = getRotateCubeF(cube)
     }
-    if (fromDrag.pieceIndex === 4) {
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 1)
-        cube = getRotateCubeSp(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 3)
-        cube = getRotateCubeEp(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 5)
-        cube = getRotateCubeE(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 7)
-        cube = getRotateCubeS(cube)
+    if (fromPiece === 4) {
+      if (toFace === 3 && toPiece === 1) cube = getRotateCubeSp(cube)
+      if (toFace === 3 && toPiece === 3) cube = getRotateCubeEp(cube)
+      if (toFace === 3 && toPiece === 5) cube = getRotateCubeE(cube)
+      if (toFace === 3 && toPiece === 7) cube = getRotateCubeS(cube)
     }
-    if (fromDrag.pieceIndex === 5) {
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 2)
-        cube = getRotateCubeB(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 4)
-        cube = getRotateCubeEp(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 8)
-        cube = getRotateCubeBp(cube)
+    if (fromPiece === 5) {
+      if (toFace === 3 && toPiece === 2) cube = getRotateCubeB(cube)
+      if (toFace === 3 && toPiece === 4) cube = getRotateCubeEp(cube)
+      if (toFace === 3 && toPiece === 8) cube = getRotateCubeBp(cube)
     }
-    if (fromDrag.pieceIndex === 6) {
-      if (toDrag.faceIndex === 1 && toDrag.pieceIndex === 8)
-        cube = getRotateCubeDp(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 3)
-        cube = getRotateCubeFp(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 7)
-        cube = getRotateCubeD(cube)
+    if (fromPiece === 6) {
+      if (toFace === 1 && toPiece === 8) cube = getRotateCubeDp(cube)
+      if (toFace === 3 && toPiece === 3) cube = getRotateCubeFp(cube)
+      if (toFace === 3 && toPiece === 7) cube = getRotateCubeD(cube)
     }
-    if (fromDrag.pieceIndex === 7) {
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 4)
-        cube = getRotateCubeSp(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 6)
-        cube = getRotateCubeDp(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 8)
-        cube = getRotateCubeD(cube)
+    if (fromPiece === 7) {
+      if (toFace === 3 && toPiece === 4) cube = getRotateCubeSp(cube)
+      if (toFace === 3 && toPiece === 6) cube = getRotateCubeDp(cube)
+      if (toFace === 3 && toPiece === 8) cube = getRotateCubeD(cube)
     }
-    if (fromDrag.pieceIndex === 8) {
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 5)
-        cube = getRotateCubeB(cube)
-      if (toDrag.faceIndex === 3 && toDrag.pieceIndex === 7)
-        cube = getRotateCubeDp(cube)
+    if (fromPiece === 8) {
+      if (toFace === 3 && toPiece === 5) cube = getRotateCubeB(cube)
+      if (toFace === 3 && toPiece === 7) cube = getRotateCubeDp(cube)
     }
   }
   return cube

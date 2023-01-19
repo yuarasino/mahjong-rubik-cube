@@ -1,4 +1,4 @@
-import { DragEvent, useState } from "react"
+import { DragEvent, TouchEvent, useState } from "react"
 
 import {
   getResetCube,
@@ -34,7 +34,7 @@ import {
 import styles from "@/styles/Cube.module.css"
 
 type CubeData = string[][]
-type DragData = { faceIndex: number; pieceIndex: number } | null
+type DragData = HTMLDivElement | null
 
 const Cube = () => {
   const [cube, setCube] = useState(getResetCube() as CubeData)
@@ -125,13 +125,13 @@ const Cube = () => {
     setDrag(data)
   }
   const applyDrag = (data: DragData) => {
+    if (drag === data) return
     if (drag === null || data === null) return
-    if (
-      drag.faceIndex === data.faceIndex &&
-      drag.pieceIndex === data.pieceIndex
-    )
-      return
-    setCube(getRotateCubeDrag(cube, drag, data))
+    const fromFace = Number(drag.dataset.face)
+    const fromPiece = Number(drag.dataset.piece)
+    const toFace = Number(data.dataset.face)
+    const toPiece = Number(data.dataset.piece)
+    setCube(getRotateCubeDrag(cube, fromFace, fromPiece, toFace, toPiece))
     setDrag(null)
   }
 
@@ -346,22 +346,35 @@ const Piece = ({
     transform: `rotateZ(${angle}deg)`,
   }
   const onDragStart = (e: DragEvent<HTMLDivElement>) => {
-    const data = { faceIndex, pieceIndex }
     const image = new Image()
     e.dataTransfer.setDragImage(image, 0, 0)
-    registerDrag(data)
+    registerDrag(e.target as HTMLDivElement)
   }
   const onDragEnter = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault()
-    const data = { faceIndex, pieceIndex }
-    applyDrag(data)
+    applyDrag(e.target as HTMLDivElement)
   }
   const onDragOver = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault()
   }
-  const onDragEnd = () => {
+  const onDragEnd = (e: DragEvent<HTMLDivElement>) => {
     registerDrag(null)
   }
+  const onTouchStart = (e: TouchEvent<HTMLDivElement>) => {
+    registerDrag(e.target as HTMLDivElement)
+  }
+  const onTouchMove = (e: TouchEvent<HTMLDivElement>) => {
+    const ec = e.changedTouches[0]
+    const data = document.elementFromPoint(
+      ec.pageX - window.pageXOffset,
+      ec.pageY - window.pageYOffset
+    )
+    applyDrag(data as HTMLDivElement)
+  }
+  const onTouchEnd = (e: TouchEvent<HTMLDivElement>) => {
+    registerDrag(null)
+  }
+
   return (
     <div
       className={styles.piece}
@@ -370,7 +383,12 @@ const Piece = ({
       onDragEnd={onDragEnd}
       onDragEnter={onDragEnter}
       onDragOver={onDragOver}
+      onTouchStart={onTouchStart}
+      onTouchEnd={onTouchEnd}
+      onTouchMove={onTouchMove}
       draggable
+      data-face={faceIndex}
+      data-piece={pieceIndex}
     >
       {character}
     </div>
