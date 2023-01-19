@@ -1,1111 +1,174 @@
 import { cloneDeep } from "lodash"
-import { Dispatch, SetStateAction } from "react"
 
 /**
- * キューブの初期配置
+ * キューブの初期状態
  *
- * ・・１２３４５６７８９ＡＢＣ・
- * ・・・・・・・・・・・・・・・
- * １・①②③・・・・・・・・・・
- * ２・④⑤⑥・・・・・・・・・・
- * ３・⑦⑧⑨・・・・・・・・・・
- * ４・１２３白白白發發發中中中・
- * ５・４５６白白白發發發中中中・
- * ６・７８９白白白發發發中中中・
- * ７・一二三・・・・・・・・・・
- * ８・四五六・・・・・・・・・・
- * ９・七八九・・・・・・・・・・
- * ・・・・・・・・・・・・・・・
+ * 中央の数字が面のインデックス(0-5)
+ * 各面の中で左上の牌から順にインデックス(0-9)が振られる
+ * ・・・・・・・・・・・・・・
+ * ・筒筒筒・・・・・・・・・・
+ * ・筒０筒・・・・・・・・・・
+ * ・筒筒筒・・・・・・・・・・
+ * ・索索索白白白發發發中中中・
+ * ・索１索白３白發４發中５中・
+ * ・索索索白白白發發發中中中・
+ * ・萬萬萬・・・・・・・・・・
+ * ・萬２萬・・・・・・・・・・
+ * ・萬萬萬・・・・・・・・・・
+ * ・・・・・・・・・・・・・・
+ * また、牌の種類だけでなく向きも保持しておく必要がある
+ * 初期配置ではすべて上向き
  */
-export const initialCharacter = [
-  // 0: 筒
-  ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨"],
-  // 1: 索
-  ["１", "２", "３", "４", "５", "６", "７", "８", "９"],
-  // 2: 萬
-  ["一", "二", "三", "四", "五", "六", "七", "八", "九"],
-  // 3: 白
-  ["白", "白", "白", "白", "白", "白", "白", "白", "白"],
-  // 4: 發
-  ["發", "發", "發", "發", "發", "發", "發", "發", "發"],
-  // 5: 中
-  ["中", "中", "中", "中", "中", "中", "中", "中", "中"],
+const initialCube = [
+  ["①↑", "②↑", "③↑", "④↑", "⑤↑", "⑥↑", "⑦↑", "⑧↑", "⑨↑"],
+  ["１↑", "２↑", "３↑", "４↑", "５↑", "６↑", "７↑", "８↑", "９↑"],
+  ["一↑", "二↑", "三↑", "四↑", "五↑", "六↑", "七↑", "八↑", "九↑"],
+  ["白↑", "白↑", "白↑", "白↑", "白↑", "白↑", "白↑", "白↑", "白↑"],
+  ["發↑", "發↑", "發↑", "發↑", "發↑", "發↑", "發↑", "發↑", "發↑"],
+  ["中↑", "中↑", "中↑", "中↑", "中↑", "中↑", "中↑", "中↑", "中↑"],
 ]
 
 /**
- * キューブの初期方向
+ * 各面が各面に対してどの方向でくっついているか
  */
-export const initialRotation = [
-  // 0: 筒
-  ["↑", "↑", "↑", "↑", "↑", "↑", "↑", "↑", "↑"],
-  // 1: 索
-  ["↑", "↑", "↑", "↑", "↑", "↑", "↑", "↑", "↑"],
-  // 2: 萬
-  ["↑", "↑", "↑", "↑", "↑", "↑", "↑", "↑", "↑"],
-  // 3: 白
-  ["↑", "↑", "↑", "↑", "↑", "↑", "↑", "↑", "↑"],
-  // 4: 發
-  ["↑", "↑", "↑", "↑", "↑", "↑", "↑", "↑", "↑"],
-  // 5: 中
-  ["↑", "↑", "↑", "↑", "↑", "↑", "↑", "↑", "↑"],
+const connectionMap = [
+  ["↑", "↑", "↑", "→", "↓", "←"],
+  ["↑", "↑", "↑", "↑", "↑", "↑"],
+  ["↑", "↑", "↑", "←", "↓", "→"],
+  ["←", "↑", "→", "↑", "↑", "↑"],
+  ["↓", "↓", "↓", "↑", "↑", "↑"],
+  ["→", "↑", "←", "↑", "↑", "↑"],
 ]
 
-export const rot2deg = (rot: string): number => {
-  const map = {
-    "↑": 0,
-    "→": 90,
-    "↓": 180,
-    "←": 270,
-  } as { [key: string]: number }
-  return map[rot]
-}
-
-export const deg2rot = (deg: number): string => {
-  const map = {
-    0: "↑",
-    90: "→",
-    180: "↓",
-    270: "←",
-  } as { [key: number]: string }
-  return map[deg]
-}
-
-export const char2col = (char: string): string => {
-  char = char.replace(/[一二三四五六七八九]/, "五")
-  char = char.replace(/[１２３４５６７８９]/, "５")
-  char = char.replace(/[①②③④⑤⑥⑦⑧⑨]/, "⑤")
-  const map = {
-    白: "#0000cc",
-    發: "#00cc00",
-    中: "#cc0000",
-    五: "#990000",
-    "５": "#009900",
-    "⑤": "#000099",
-  } as { [key: string]: string }
-  return map[char]
-}
-
-export const zip = (arr1: any[], arr2: any[]) => {
-  return arr1.map((_, i) => [arr1[i], arr2[i]])
-}
-
-const rotateCharMatF = (mat: string[]): string[] => {
-  return [
-    mat[6],
-    mat[3],
-    mat[0],
-    mat[7],
-    mat[4],
-    mat[1],
-    mat[8],
-    mat[5],
-    mat[2],
-  ]
-}
-
-const rotateCharMatFd = (mat: string[]): string[] => {
-  return [
-    mat[2],
-    mat[5],
-    mat[8],
-    mat[1],
-    mat[4],
-    mat[7],
-    mat[0],
-    mat[3],
-    mat[6],
-  ]
-}
-
-const rotateCharMatF2 = (mat: string[]): string[] => {
-  return rotateCharMatF(rotateCharMatF(mat))
-}
-
-const rotateRotF = (m: string): string => {
-  return deg2rot((rot2deg(m) + 90) % 360)
-}
-
-const rotateRotFd = (m: string): string => {
-  return deg2rot((rot2deg(m) + 270) % 360)
-}
-
-const rotateRotF2 = (m: string): string => {
-  return rotateRotF(rotateRotF(m))
-}
-
-const rotateRotMatF = (mat: string[]): string[] => {
-  return mat.map((m) => rotateRotF(m))
-}
-
-const rotateRotMatFd = (mat: string[]): string[] => {
-  return mat.map((m) => rotateRotFd(m))
-}
-
-const rotateRotMatF2 = (mat: string[]): string[] => {
-  return rotateRotMatF(rotateRotMatF(mat))
-}
-
-export const rotateXd = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[0] = rotateCharMatF2(character[4])
-  characterNext[1] = character[0]
-  characterNext[2] = character[1]
-  characterNext[3] = rotateCharMatFd(character[3])
-  characterNext[4] = rotateCharMatF2(character[2])
-  characterNext[5] = rotateCharMatF(character[5])
-
-  rotationNext[0] = rotateRotMatF2(rotateCharMatF2(rotation[4]))
-  rotationNext[1] = rotation[0]
-  rotationNext[2] = rotation[1]
-  rotationNext[3] = rotateRotMatFd(rotateCharMatFd(rotation[3]))
-  rotationNext[4] = rotateRotMatF2(rotateCharMatF2(rotation[2]))
-  rotationNext[5] = rotateRotMatF(rotateCharMatF(rotation[5]))
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateX = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[0] = character[1]
-  characterNext[1] = character[2]
-  characterNext[2] = rotateCharMatF2(character[4])
-  characterNext[3] = rotateCharMatF(character[3])
-  characterNext[4] = rotateCharMatF2(character[0])
-  characterNext[5] = rotateCharMatFd(character[5])
-
-  rotationNext[0] = rotation[1]
-  rotationNext[1] = rotation[2]
-  rotationNext[2] = rotateRotMatF2(rotateCharMatF2(rotation[4]))
-  rotationNext[3] = rotateRotMatF(rotateCharMatF(rotation[3]))
-  rotationNext[4] = rotateRotMatF2(rotateCharMatF2(rotation[0]))
-  rotationNext[5] = rotateRotMatFd(rotateCharMatFd(rotation[5]))
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateYd = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[0] = rotateCharMatFd(character[0])
-  characterNext[1] = character[5]
-  characterNext[2] = rotateCharMatF(character[2])
-  characterNext[3] = character[1]
-  characterNext[4] = character[3]
-  characterNext[5] = character[4]
-
-  rotationNext[0] = rotateRotMatFd(rotateCharMatFd(rotation[0]))
-  rotationNext[1] = rotation[5]
-  rotationNext[2] = rotateRotMatF(rotateCharMatF(rotation[2]))
-  rotationNext[3] = rotation[1]
-  rotationNext[4] = rotation[3]
-  rotationNext[5] = rotation[4]
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateY = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[0] = rotateCharMatF(character[0])
-  characterNext[1] = character[3]
-  characterNext[2] = rotateCharMatFd(character[2])
-  characterNext[3] = character[4]
-  characterNext[4] = character[5]
-  characterNext[5] = character[1]
-
-  rotationNext[0] = rotateRotMatF(rotateCharMatF(rotation[0]))
-  rotationNext[1] = rotation[3]
-  rotationNext[2] = rotateRotMatFd(rotateCharMatFd(rotation[2]))
-  rotationNext[3] = rotation[4]
-  rotationNext[4] = rotation[5]
-  rotationNext[5] = rotation[1]
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateZ = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[0] = rotateCharMatF(character[5])
-  characterNext[1] = rotateCharMatF(character[1])
-  characterNext[2] = rotateCharMatF(character[3])
-  characterNext[3] = rotateCharMatF(character[0])
-  characterNext[4] = rotateCharMatFd(character[4])
-  characterNext[5] = rotateCharMatF(character[2])
-
-  rotationNext[0] = rotateRotMatF(rotateCharMatF(rotation[5]))
-  rotationNext[1] = rotateRotMatF(rotateCharMatF(rotation[1]))
-  rotationNext[2] = rotateRotMatF(rotateCharMatF(rotation[3]))
-  rotationNext[3] = rotateRotMatF(rotateCharMatF(rotation[0]))
-  rotationNext[4] = rotateRotMatFd(rotateCharMatFd(rotation[4]))
-  rotationNext[5] = rotateRotMatF(rotateCharMatF(rotation[2]))
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateZd = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[0] = rotateCharMatFd(character[3])
-  characterNext[1] = rotateCharMatFd(character[1])
-  characterNext[2] = rotateCharMatFd(character[5])
-  characterNext[3] = rotateCharMatFd(character[2])
-  characterNext[4] = rotateCharMatF(character[4])
-  characterNext[5] = rotateCharMatFd(character[0])
-
-  rotationNext[0] = rotateRotMatFd(rotateCharMatFd(rotation[3]))
-  rotationNext[1] = rotateRotMatFd(rotateCharMatFd(rotation[1]))
-  rotationNext[2] = rotateRotMatFd(rotateCharMatFd(rotation[5]))
-  rotationNext[3] = rotateRotMatFd(rotateCharMatFd(rotation[2]))
-  rotationNext[4] = rotateRotMatF(rotateCharMatF(rotation[4]))
-  rotationNext[5] = rotateRotMatFd(rotateCharMatFd(rotation[0]))
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateU = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[0] = rotateCharMatF(character[0])
-  characterNext[1][0] = character[3][0]
-  characterNext[1][1] = character[3][1]
-  characterNext[1][2] = character[3][2]
-  characterNext[3][0] = character[4][0]
-  characterNext[3][1] = character[4][1]
-  characterNext[3][2] = character[4][2]
-  characterNext[4][0] = character[5][0]
-  characterNext[4][1] = character[5][1]
-  characterNext[4][2] = character[5][2]
-  characterNext[5][0] = character[1][0]
-  characterNext[5][1] = character[1][1]
-  characterNext[5][2] = character[1][2]
-
-  rotationNext[0] = rotateRotMatF(rotateCharMatF(rotation[0]))
-  rotationNext[1][0] = rotation[3][0]
-  rotationNext[1][1] = rotation[3][1]
-  rotationNext[1][2] = rotation[3][2]
-  rotationNext[3][0] = rotation[4][0]
-  rotationNext[3][1] = rotation[4][1]
-  rotationNext[3][2] = rotation[4][2]
-  rotationNext[4][0] = rotation[5][0]
-  rotationNext[4][1] = rotation[5][1]
-  rotationNext[4][2] = rotation[5][2]
-  rotationNext[5][0] = rotation[1][0]
-  rotationNext[5][1] = rotation[1][1]
-  rotationNext[5][2] = rotation[1][2]
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateUd = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[0] = rotateCharMatFd(character[0])
-  characterNext[1][0] = character[5][0]
-  characterNext[1][1] = character[5][1]
-  characterNext[1][2] = character[5][2]
-  characterNext[3][0] = character[1][0]
-  characterNext[3][1] = character[1][1]
-  characterNext[3][2] = character[1][2]
-  characterNext[4][0] = character[3][0]
-  characterNext[4][1] = character[3][1]
-  characterNext[4][2] = character[3][2]
-  characterNext[5][0] = character[4][0]
-  characterNext[5][1] = character[4][1]
-  characterNext[5][2] = character[4][2]
-
-  rotationNext[0] = rotateRotMatFd(rotateCharMatFd(rotation[0]))
-  rotationNext[1][0] = rotation[5][0]
-  rotationNext[1][1] = rotation[5][1]
-  rotationNext[1][2] = rotation[5][2]
-  rotationNext[3][0] = rotation[1][0]
-  rotationNext[3][1] = rotation[1][1]
-  rotationNext[3][2] = rotation[1][2]
-  rotationNext[4][0] = rotation[3][0]
-  rotationNext[4][1] = rotation[3][1]
-  rotationNext[4][2] = rotation[3][2]
-  rotationNext[5][0] = rotation[4][0]
-  rotationNext[5][1] = rotation[4][1]
-  rotationNext[5][2] = rotation[4][2]
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateF = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[1] = rotateCharMatF(character[1])
-  characterNext[0][6] = character[5][8]
-  characterNext[0][7] = character[5][5]
-  characterNext[0][8] = character[5][2]
-  characterNext[2][0] = character[3][6]
-  characterNext[2][1] = character[3][3]
-  characterNext[2][2] = character[3][0]
-  characterNext[3][0] = character[0][6]
-  characterNext[3][3] = character[0][7]
-  characterNext[3][6] = character[0][8]
-  characterNext[5][2] = character[2][0]
-  characterNext[5][5] = character[2][1]
-  characterNext[5][8] = character[2][2]
-
-  rotationNext[1] = rotateRotMatF(rotateCharMatF(rotation[1]))
-  rotationNext[0][6] = rotateRotF(rotation[5][8])
-  rotationNext[0][7] = rotateRotF(rotation[5][5])
-  rotationNext[0][8] = rotateRotF(rotation[5][2])
-  rotationNext[2][0] = rotateRotF(rotation[3][6])
-  rotationNext[2][1] = rotateRotF(rotation[3][3])
-  rotationNext[2][2] = rotateRotF(rotation[3][0])
-  rotationNext[3][0] = rotateRotF(rotation[0][6])
-  rotationNext[3][3] = rotateRotF(rotation[0][7])
-  rotationNext[3][6] = rotateRotF(rotation[0][8])
-  rotationNext[5][2] = rotateRotF(rotation[2][0])
-  rotationNext[5][5] = rotateRotF(rotation[2][1])
-  rotationNext[5][8] = rotateRotF(rotation[2][2])
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateFd = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[1] = rotateCharMatFd(character[1])
-  characterNext[0][6] = character[3][0]
-  characterNext[0][7] = character[3][3]
-  characterNext[0][8] = character[3][6]
-  characterNext[2][0] = character[5][2]
-  characterNext[2][1] = character[5][5]
-  characterNext[2][2] = character[5][8]
-  characterNext[3][0] = character[2][2]
-  characterNext[3][3] = character[2][1]
-  characterNext[3][6] = character[2][0]
-  characterNext[5][2] = character[0][8]
-  characterNext[5][5] = character[0][7]
-  characterNext[5][8] = character[0][6]
-
-  rotationNext[1] = rotateRotMatFd(rotateCharMatFd(rotation[1]))
-  rotationNext[0][6] = rotateRotFd(rotation[3][0])
-  rotationNext[0][7] = rotateRotFd(rotation[3][3])
-  rotationNext[0][8] = rotateRotFd(rotation[3][6])
-  rotationNext[2][0] = rotateRotFd(rotation[5][2])
-  rotationNext[2][1] = rotateRotFd(rotation[5][5])
-  rotationNext[2][2] = rotateRotFd(rotation[5][8])
-  rotationNext[3][0] = rotateRotFd(rotation[2][2])
-  rotationNext[3][3] = rotateRotFd(rotation[2][1])
-  rotationNext[3][6] = rotateRotFd(rotation[2][0])
-  rotationNext[5][2] = rotateRotFd(rotation[0][8])
-  rotationNext[5][5] = rotateRotFd(rotation[0][7])
-  rotationNext[5][8] = rotateRotFd(rotation[0][6])
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateR = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[3] = rotateCharMatF(character[3])
-  characterNext[0][2] = character[1][2]
-  characterNext[0][5] = character[1][5]
-  characterNext[0][8] = character[1][8]
-  characterNext[1][2] = character[2][2]
-  characterNext[1][5] = character[2][5]
-  characterNext[1][8] = character[2][8]
-  characterNext[2][2] = character[4][6]
-  characterNext[2][5] = character[4][3]
-  characterNext[2][8] = character[4][0]
-  characterNext[4][0] = character[0][8]
-  characterNext[4][3] = character[0][5]
-  characterNext[4][6] = character[0][2]
-
-  rotationNext[3] = rotateRotMatF(rotateCharMatF(rotation[3]))
-  rotationNext[0][2] = rotation[1][2]
-  rotationNext[0][5] = rotation[1][5]
-  rotationNext[0][8] = rotation[1][8]
-  rotationNext[1][2] = rotation[2][2]
-  rotationNext[1][5] = rotation[2][5]
-  rotationNext[1][8] = rotation[2][8]
-  rotationNext[2][2] = rotateRotF2(rotation[4][6])
-  rotationNext[2][5] = rotateRotF2(rotation[4][3])
-  rotationNext[2][8] = rotateRotF2(rotation[4][0])
-  rotationNext[4][0] = rotateRotF2(rotation[0][8])
-  rotationNext[4][3] = rotateRotF2(rotation[0][5])
-  rotationNext[4][6] = rotateRotF2(rotation[0][2])
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateRd = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[3] = rotateCharMatFd(character[3])
-  characterNext[0][2] = character[4][6]
-  characterNext[0][5] = character[4][3]
-  characterNext[0][8] = character[4][0]
-  characterNext[1][2] = character[0][2]
-  characterNext[1][5] = character[0][5]
-  characterNext[1][8] = character[0][8]
-  characterNext[2][2] = character[1][2]
-  characterNext[2][5] = character[1][5]
-  characterNext[2][8] = character[1][8]
-  characterNext[4][0] = character[2][8]
-  characterNext[4][3] = character[2][5]
-  characterNext[4][6] = character[2][2]
-
-  rotationNext[3] = rotateRotMatFd(rotateCharMatFd(rotation[3]))
-  rotationNext[0][2] = rotateRotF2(rotation[4][6])
-  rotationNext[0][5] = rotateRotF2(rotation[4][3])
-  rotationNext[0][8] = rotateRotF2(rotation[4][0])
-  rotationNext[1][2] = rotation[0][2]
-  rotationNext[1][5] = rotation[0][5]
-  rotationNext[1][8] = rotation[0][8]
-  rotationNext[2][2] = rotation[1][2]
-  rotationNext[2][5] = rotation[1][5]
-  rotationNext[2][8] = rotation[1][8]
-  rotationNext[4][0] = rotateRotF2(rotation[2][8])
-  rotationNext[4][3] = rotateRotF2(rotation[2][5])
-  rotationNext[4][6] = rotateRotF2(rotation[2][2])
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateD = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[2] = rotateCharMatF(character[2])
-  characterNext[1][6] = character[5][6]
-  characterNext[1][7] = character[5][7]
-  characterNext[1][8] = character[5][8]
-  characterNext[3][6] = character[1][6]
-  characterNext[3][7] = character[1][7]
-  characterNext[3][8] = character[1][8]
-  characterNext[4][6] = character[3][6]
-  characterNext[4][7] = character[3][7]
-  characterNext[4][8] = character[3][8]
-  characterNext[5][6] = character[4][6]
-  characterNext[5][7] = character[4][7]
-  characterNext[5][8] = character[4][8]
-
-  rotationNext[2] = rotateRotMatF(rotateCharMatF(rotation[2]))
-  rotationNext[1][6] = rotation[5][6]
-  rotationNext[1][7] = rotation[5][7]
-  rotationNext[1][8] = rotation[5][8]
-  rotationNext[3][6] = rotation[1][6]
-  rotationNext[3][7] = rotation[1][7]
-  rotationNext[3][8] = rotation[1][8]
-  rotationNext[4][6] = rotation[3][6]
-  rotationNext[4][7] = rotation[3][7]
-  rotationNext[4][8] = rotation[3][8]
-  rotationNext[5][6] = rotation[4][6]
-  rotationNext[5][7] = rotation[4][7]
-  rotationNext[5][8] = rotation[4][8]
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateDd = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[2] = rotateCharMatFd(character[2])
-  characterNext[1][6] = character[3][6]
-  characterNext[1][7] = character[3][7]
-  characterNext[1][8] = character[3][8]
-  characterNext[3][6] = character[4][6]
-  characterNext[3][7] = character[4][7]
-  characterNext[3][8] = character[4][8]
-  characterNext[4][6] = character[5][6]
-  characterNext[4][7] = character[5][7]
-  characterNext[4][8] = character[5][8]
-  characterNext[5][6] = character[1][6]
-  characterNext[5][7] = character[1][7]
-  characterNext[5][8] = character[1][8]
-
-  rotationNext[2] = rotateRotMatFd(rotateCharMatFd(rotation[2]))
-  rotationNext[1][6] = rotation[3][6]
-  rotationNext[1][7] = rotation[3][7]
-  rotationNext[1][8] = rotation[3][8]
-  rotationNext[3][6] = rotation[4][6]
-  rotationNext[3][7] = rotation[4][7]
-  rotationNext[3][8] = rotation[4][8]
-  rotationNext[4][6] = rotation[5][6]
-  rotationNext[4][7] = rotation[5][7]
-  rotationNext[4][8] = rotation[5][8]
-  rotationNext[5][6] = rotation[1][6]
-  rotationNext[5][7] = rotation[1][7]
-  rotationNext[5][8] = rotation[1][8]
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateB = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[4] = rotateCharMatF(character[4])
-  characterNext[0][0] = character[3][2]
-  characterNext[0][1] = character[3][5]
-  characterNext[0][2] = character[3][8]
-  characterNext[2][6] = character[5][0]
-  characterNext[2][7] = character[5][3]
-  characterNext[2][8] = character[5][6]
-  characterNext[3][2] = character[2][8]
-  characterNext[3][5] = character[2][7]
-  characterNext[3][8] = character[2][6]
-  characterNext[5][0] = character[0][2]
-  characterNext[5][3] = character[0][1]
-  characterNext[5][6] = character[0][0]
-
-  rotationNext[4] = rotateRotMatF(rotateCharMatF(rotation[4]))
-  rotationNext[0][0] = rotateRotFd(rotation[3][2])
-  rotationNext[0][1] = rotateRotFd(rotation[3][5])
-  rotationNext[0][2] = rotateRotFd(rotation[3][8])
-  rotationNext[2][6] = rotateRotFd(rotation[5][0])
-  rotationNext[2][7] = rotateRotFd(rotation[5][3])
-  rotationNext[2][8] = rotateRotFd(rotation[5][6])
-  rotationNext[3][2] = rotateRotFd(rotation[2][8])
-  rotationNext[3][5] = rotateRotFd(rotation[2][7])
-  rotationNext[3][8] = rotateRotFd(rotation[2][6])
-  rotationNext[5][0] = rotateRotFd(rotation[0][2])
-  rotationNext[5][3] = rotateRotFd(rotation[0][1])
-  rotationNext[5][6] = rotateRotFd(rotation[0][0])
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateBd = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[4] = rotateCharMatFd(character[4])
-  characterNext[0][0] = character[5][6]
-  characterNext[0][1] = character[5][3]
-  characterNext[0][2] = character[5][0]
-  characterNext[2][6] = character[3][8]
-  characterNext[2][7] = character[3][5]
-  characterNext[2][8] = character[3][2]
-  characterNext[3][2] = character[0][0]
-  characterNext[3][5] = character[0][1]
-  characterNext[3][8] = character[0][2]
-  characterNext[5][0] = character[2][6]
-  characterNext[5][3] = character[2][7]
-  characterNext[5][6] = character[2][8]
-
-  rotationNext[4] = rotateRotMatFd(rotateCharMatFd(rotation[4]))
-  rotationNext[0][0] = rotateRotF(rotation[5][6])
-  rotationNext[0][1] = rotateRotF(rotation[5][3])
-  rotationNext[0][2] = rotateRotF(rotation[5][0])
-  rotationNext[2][6] = rotateRotF(rotation[3][8])
-  rotationNext[2][7] = rotateRotF(rotation[3][5])
-  rotationNext[2][8] = rotateRotF(rotation[3][2])
-  rotationNext[3][2] = rotateRotF(rotation[0][0])
-  rotationNext[3][5] = rotateRotF(rotation[0][1])
-  rotationNext[3][8] = rotateRotF(rotation[0][2])
-  rotationNext[5][0] = rotateRotF(rotation[2][6])
-  rotationNext[5][3] = rotateRotF(rotation[2][7])
-  rotationNext[5][6] = rotateRotF(rotation[2][8])
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateL = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[5] = rotateCharMatF(character[5])
-  characterNext[0][0] = character[4][8]
-  characterNext[0][3] = character[4][5]
-  characterNext[0][6] = character[4][2]
-  characterNext[1][0] = character[0][0]
-  characterNext[1][3] = character[0][3]
-  characterNext[1][6] = character[0][6]
-  characterNext[2][0] = character[1][0]
-  characterNext[2][3] = character[1][3]
-  characterNext[2][6] = character[1][6]
-  characterNext[4][2] = character[2][6]
-  characterNext[4][5] = character[2][3]
-  characterNext[4][8] = character[2][0]
-
-  rotationNext[5] = rotateRotMatFd(rotateCharMatFd(rotation[5]))
-  rotationNext[0][0] = rotateRotF2(rotation[4][8])
-  rotationNext[0][3] = rotateRotF2(rotation[4][5])
-  rotationNext[0][6] = rotateRotF2(rotation[4][2])
-  rotationNext[1][0] = rotation[0][0]
-  rotationNext[1][3] = rotation[0][3]
-  rotationNext[1][6] = rotation[0][6]
-  rotationNext[2][0] = rotation[1][0]
-  rotationNext[2][3] = rotation[1][3]
-  rotationNext[2][6] = rotation[1][6]
-  rotationNext[4][2] = rotateRotF2(rotation[2][6])
-  rotationNext[4][5] = rotateRotF2(rotation[2][3])
-  rotationNext[4][8] = rotateRotF2(rotation[2][0])
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateLd = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[5] = rotateCharMatFd(character[5])
-  characterNext[0][0] = character[1][0]
-  characterNext[0][3] = character[1][3]
-  characterNext[0][6] = character[1][6]
-  characterNext[1][0] = character[2][0]
-  characterNext[1][3] = character[2][3]
-  characterNext[1][6] = character[2][6]
-  characterNext[2][0] = character[4][8]
-  characterNext[2][3] = character[4][5]
-  characterNext[2][6] = character[4][2]
-  characterNext[4][2] = character[0][6]
-  characterNext[4][5] = character[0][3]
-  characterNext[4][8] = character[0][0]
-
-  rotationNext[5] = rotateRotMatFd(rotateCharMatFd(rotation[5]))
-  rotationNext[0][0] = rotation[1][0]
-  rotationNext[0][3] = rotation[1][3]
-  rotationNext[0][6] = rotation[1][6]
-  rotationNext[1][0] = rotation[2][0]
-  rotationNext[1][3] = rotation[2][3]
-  rotationNext[1][6] = rotation[2][6]
-  rotationNext[2][0] = rotateRotF2(rotation[4][8])
-  rotationNext[2][3] = rotateRotF2(rotation[4][5])
-  rotationNext[2][6] = rotateRotF2(rotation[4][2])
-  rotationNext[4][2] = rotateRotF2(rotation[0][6])
-  rotationNext[4][5] = rotateRotF2(rotation[0][3])
-  rotationNext[4][8] = rotateRotF2(rotation[0][0])
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateM = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[0][1] = character[4][7]
-  characterNext[0][4] = character[4][4]
-  characterNext[0][7] = character[4][1]
-  characterNext[1][1] = character[0][1]
-  characterNext[1][4] = character[0][4]
-  characterNext[1][7] = character[0][7]
-  characterNext[2][1] = character[1][1]
-  characterNext[2][4] = character[1][4]
-  characterNext[2][7] = character[1][7]
-  characterNext[4][1] = character[2][7]
-  characterNext[4][4] = character[2][4]
-  characterNext[4][7] = character[2][1]
-
-  rotationNext[0][1] = rotateRotF2(rotation[4][7])
-  rotationNext[0][4] = rotateRotF2(rotation[4][4])
-  rotationNext[0][7] = rotateRotF2(rotation[4][1])
-  rotationNext[1][1] = rotation[0][1]
-  rotationNext[1][4] = rotation[0][4]
-  rotationNext[1][7] = rotation[0][7]
-  rotationNext[2][1] = rotation[1][1]
-  rotationNext[2][4] = rotation[1][4]
-  rotationNext[2][7] = rotation[1][7]
-  rotationNext[4][1] = rotateRotF2(rotation[2][7])
-  rotationNext[4][4] = rotateRotF2(rotation[2][4])
-  rotationNext[4][7] = rotateRotF2(rotation[2][1])
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateMd = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[0][1] = character[1][1]
-  characterNext[0][4] = character[1][4]
-  characterNext[0][7] = character[1][7]
-  characterNext[1][1] = character[2][1]
-  characterNext[1][4] = character[2][4]
-  characterNext[1][7] = character[2][7]
-  characterNext[2][1] = character[4][7]
-  characterNext[2][4] = character[4][4]
-  characterNext[2][7] = character[4][1]
-  characterNext[4][1] = character[0][7]
-  characterNext[4][4] = character[0][4]
-  characterNext[4][7] = character[0][1]
-
-  rotationNext[0][1] = rotation[1][1]
-  rotationNext[0][4] = rotation[1][4]
-  rotationNext[0][7] = rotation[1][7]
-  rotationNext[1][1] = rotation[2][1]
-  rotationNext[1][4] = rotation[2][4]
-  rotationNext[1][7] = rotation[2][7]
-  rotationNext[2][1] = rotateRotF2(rotation[4][7])
-  rotationNext[2][4] = rotateRotF2(rotation[4][4])
-  rotationNext[2][7] = rotateRotF2(rotation[4][1])
-  rotationNext[4][1] = rotateRotF2(rotation[0][7])
-  rotationNext[4][4] = rotateRotF2(rotation[0][4])
-  rotationNext[4][7] = rotateRotF2(rotation[0][1])
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateE = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[1][3] = character[5][3]
-  characterNext[1][4] = character[5][4]
-  characterNext[1][5] = character[5][5]
-  characterNext[3][3] = character[1][3]
-  characterNext[3][4] = character[1][4]
-  characterNext[3][5] = character[1][5]
-  characterNext[4][3] = character[3][3]
-  characterNext[4][4] = character[3][4]
-  characterNext[4][5] = character[3][5]
-  characterNext[5][3] = character[4][3]
-  characterNext[5][4] = character[4][4]
-  characterNext[5][5] = character[4][5]
-
-  rotationNext[1][3] = rotation[5][3]
-  rotationNext[1][4] = rotation[5][4]
-  rotationNext[1][5] = rotation[5][5]
-  rotationNext[3][3] = rotation[1][3]
-  rotationNext[3][4] = rotation[1][4]
-  rotationNext[3][5] = rotation[1][5]
-  rotationNext[4][3] = rotation[3][3]
-  rotationNext[4][4] = rotation[3][4]
-  rotationNext[4][5] = rotation[3][5]
-  rotationNext[5][3] = rotation[4][3]
-  rotationNext[5][4] = rotation[4][4]
-  rotationNext[5][5] = rotation[4][5]
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateEd = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[1][3] = character[3][3]
-  characterNext[1][4] = character[3][4]
-  characterNext[1][5] = character[3][5]
-  characterNext[3][3] = character[4][3]
-  characterNext[3][4] = character[4][4]
-  characterNext[3][5] = character[4][5]
-  characterNext[4][3] = character[5][3]
-  characterNext[4][4] = character[5][4]
-  characterNext[4][5] = character[5][5]
-  characterNext[5][3] = character[1][3]
-  characterNext[5][4] = character[1][4]
-  characterNext[5][5] = character[1][5]
-
-  rotationNext[1][3] = rotation[3][3]
-  rotationNext[1][4] = rotation[3][4]
-  rotationNext[1][5] = rotation[3][5]
-  rotationNext[3][3] = rotation[4][3]
-  rotationNext[3][4] = rotation[4][4]
-  rotationNext[3][5] = rotation[4][5]
-  rotationNext[4][3] = rotation[5][3]
-  rotationNext[4][4] = rotation[5][4]
-  rotationNext[4][5] = rotation[5][5]
-  rotationNext[5][3] = rotation[1][3]
-  rotationNext[5][4] = rotation[1][4]
-  rotationNext[5][5] = rotation[1][5]
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateS = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[0][3] = character[5][1]
-  characterNext[0][4] = character[5][4]
-  characterNext[0][5] = character[5][7]
-  characterNext[2][3] = character[3][7]
-  characterNext[2][4] = character[3][4]
-  characterNext[2][5] = character[3][1]
-  characterNext[3][1] = character[0][3]
-  characterNext[3][4] = character[0][4]
-  characterNext[3][7] = character[0][5]
-  characterNext[5][1] = character[2][3]
-  characterNext[5][4] = character[2][4]
-  characterNext[5][7] = character[2][5]
-
-  rotationNext[0][3] = rotateRotF(rotation[5][1])
-  rotationNext[0][4] = rotateRotF(rotation[5][4])
-  rotationNext[0][5] = rotateRotF(rotation[5][7])
-  rotationNext[2][3] = rotateRotF(rotation[3][7])
-  rotationNext[2][4] = rotateRotF(rotation[3][4])
-  rotationNext[2][5] = rotateRotF(rotation[3][1])
-  rotationNext[3][1] = rotateRotF(rotation[0][3])
-  rotationNext[3][4] = rotateRotF(rotation[0][4])
-  rotationNext[3][7] = rotateRotF(rotation[0][5])
-  rotationNext[5][1] = rotateRotF(rotation[2][3])
-  rotationNext[5][4] = rotateRotF(rotation[2][4])
-  rotationNext[5][7] = rotateRotF(rotation[2][5])
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const rotateSd = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(character)
-  const rotationNext = cloneDeep(rotation)
-
-  characterNext[0][3] = character[3][1]
-  characterNext[0][4] = character[3][4]
-  characterNext[0][5] = character[3][7]
-  characterNext[2][3] = character[5][1]
-  characterNext[2][4] = character[5][4]
-  characterNext[2][5] = character[5][7]
-  characterNext[3][1] = character[2][5]
-  characterNext[3][4] = character[2][4]
-  characterNext[3][7] = character[2][3]
-  characterNext[5][1] = character[0][5]
-  characterNext[5][4] = character[0][4]
-  characterNext[5][7] = character[0][3]
-
-  rotationNext[0][3] = rotateRotFd(rotation[3][1])
-  rotationNext[0][4] = rotateRotFd(rotation[3][4])
-  rotationNext[0][5] = rotateRotFd(rotation[3][7])
-  rotationNext[2][3] = rotateRotFd(rotation[5][1])
-  rotationNext[2][4] = rotateRotFd(rotation[5][4])
-  rotationNext[2][5] = rotateRotFd(rotation[5][7])
-  rotationNext[3][1] = rotateRotFd(rotation[2][5])
-  rotationNext[3][4] = rotateRotFd(rotation[2][4])
-  rotationNext[3][7] = rotateRotFd(rotation[2][3])
-  rotationNext[5][1] = rotateRotFd(rotation[0][5])
-  rotationNext[5][4] = rotateRotFd(rotation[0][4])
-  rotationNext[5][7] = rotateRotFd(rotation[0][3])
-
-  setCharacter(characterNext)
-  setRotation(rotationNext)
-  return [characterNext, rotationNext]
-}
-
-export const shuffle = (
-  character: string[][],
-  rotation: string[][],
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  let characterNext = cloneDeep(character)
-  let rotationNext = cloneDeep(rotation)
-  const funcs = [
-    rotateU,
-    rotateUd,
-    rotateF,
-    rotateFd,
-    rotateR,
-    rotateRd,
-    rotateD,
-    rotateDd,
-    rotateB,
-    rotateBd,
-    rotateL,
-    rotateLd,
-    rotateM,
-    rotateMd,
-    rotateE,
-    rotateEd,
-    rotateS,
-    rotateSd,
-  ]
-  reset(setCharacter, setRotation)
-
-  for (let i = 0; i < 25; i++) {
-    let r = Math.floor(Math.random() * funcs.length)
-    ;[characterNext, rotationNext] = funcs[r](
-      characterNext,
-      rotationNext,
-      setCharacter,
-      setRotation
-    )
+const rotateWithFace = (cube: string[][], cubeNext: string[][], face: number, prime: boolean): string[][] => {
+  const destinationMap = [
+    [6, 3, 0, 7, 4, 1, 8, 5, 2],
+    [2, 5, 8, 1, 4, 7, 0, 3, 6],
+  ][prime ? 1: 0]
+  const directionMap = [
+    "→↓←↑",
+    "←↑→↓",
+  ][prime ? 1: 0]
+  for (let fromPiece=0; fromPiece<9; fromPiece++) {
+    let toPiece = destinationMap.indexOf(fromPiece)
+    let piece = cube[face][fromPiece]
+    cubeNext[face][toPiece] = piece[0] + directionMap["↑→↓←".indexOf(piece[1])]
   }
-  setCharacter(characterNext)
-  setRotation(rotationNext)
+  return cubeNext
 }
 
-export const reset = (
-  setCharacter: Dispatch<SetStateAction<string[][]>>,
-  setRotation: Dispatch<SetStateAction<string[][]>>
-) => {
-  const characterNext = cloneDeep(initialCharacter)
-  const rotationNext = cloneDeep(initialRotation)
-  setCharacter(characterNext)
-  setRotation(rotationNext)
+const rotateWithConnection = (cube: string[][], cubeNext: string[][], fromFace: number, fromPices: number[], toFace: number): string[][] => {
+  const connection = connectionMap[fromFace][toFace]
+  const destinationMap = [
+    [0, 1, 2, 3, 4, 5, 6, 7, 8],
+    [6, 3, 0, 7, 4, 1, 8, 5, 2],
+    [8, 7, 6, 5, 4, 3, 2, 1, 0],
+    [2, 5, 8, 1, 4, 7, 0, 3, 6],
+  ]["↑→↓←".indexOf(connection)]
+  const directionMap = [
+    "↑→↓←",
+    "→↓←↑",
+    "↓←↑→",
+    "←↑→↓",
+  ]["↑→↓←".indexOf(connection)]
+  for (let fromPiece of fromPices) {
+    let toPiece = destinationMap.indexOf(fromPiece)
+    let piece = cube[fromFace][fromPiece]
+    cubeNext[toFace][toPiece] = piece[0] + directionMap["↑→↓←".indexOf(piece[1])]
+  }
+  return cubeNext
+}
+
+export const getResetCube = (): string[][] => {
+  return cloneDeep(initialCube)
+}
+
+export const getShuffleCube = (): string[][] => {
+  return cloneDeep(initialCube)
+}
+
+export const getAngle = (piece: string): number => {
+  const direction = piece[1]
+  return "↑→↓←".indexOf(direction) * 90
+}
+
+export const getColor = (piece: string): string => {
+  const character = piece[0]
+    .replace(/[一二三四五六七八九]/, "五")
+    .replace(/[１２３４５６７８９]/, "５")
+    .replace(/[①②③④⑤⑥⑦⑧⑨]/, "⑤")
+  return (
+    {
+      白: "#0000cc",
+      發: "#00cc00",
+      中: "#cc0000",
+      五: "#990000",
+      "５": "#009900",
+      "⑤": "#000099",
+    }[character] ?? "#000000"
+  )
+}
+
+export const getRotateCubeX = (cube: string[][]): string[][] => {
+  return cube
+}
+
+export const getRotateCubeXp = (cube: string[][]): string[][] => {
+  return cube
+}
+
+export const getRotateCubeY = (cube: string[][]): string[][] => {
+  return cube
+}
+
+export const getRotateCubeYp = (cube: string[][]): string[][] => {
+  return cube
+}
+
+export const getRotateCubeZ = (cube: string[][]): string[][] => {
+  return cube
+}
+
+export const getRotateCubeZp = (cube: string[][]): string[][] => {
+  return cube
+}
+
+export const getRotateCubeU = (cube: string[][]): string[][] => {
+  let cubeNext = cloneDeep(cube)
+  cubeNext = rotateWithFace(cube, cubeNext, 0, false)
+  cubeNext = rotateWithConnection(cube, cubeNext, 3, [0, 1, 2], 1)
+  cubeNext = rotateWithConnection(cube, cubeNext, 4, [0, 1, 2], 3)
+  cubeNext = rotateWithConnection(cube, cubeNext, 5, [0, 1, 2], 4)
+  cubeNext = rotateWithConnection(cube, cubeNext, 1, [0, 1, 2], 5)
+  return cubeNext
+}
+
+export const getRotateCubeUp = (cube: string[][]): string[][] => {
+  let cubeNext = cloneDeep(cube)
+  cubeNext = rotateWithFace(cube, cubeNext, 0, true)
+  cubeNext = rotateWithConnection(cube, cubeNext, 5, [0, 1, 2], 1)
+  cubeNext = rotateWithConnection(cube, cubeNext, 1, [0, 1, 2], 3)
+  cubeNext = rotateWithConnection(cube, cubeNext, 3, [0, 1, 2], 4)
+  cubeNext = rotateWithConnection(cube, cubeNext, 4, [0, 1, 2], 5)
+  return cubeNext
+}
+
+export const getRotateCubeF = (cube: string[][]): string[][] => {
+  let cubeNext = cloneDeep(cube)
+  cubeNext = rotateWithFace(cube, cubeNext, 1, false)
+  cubeNext = rotateWithConnection(cube, cubeNext, 5, [2, 5, 8], 0)
+  cubeNext = rotateWithConnection(cube, cubeNext, 3, [0, 3, 6], 2)
+  cubeNext = rotateWithConnection(cube, cubeNext, 0, [6, 7, 8], 3)
+  cubeNext = rotateWithConnection(cube, cubeNext, 2, [0, 1, 2], 5)
+  return cubeNext
+}
+
+export const getRotateCubeFp = (cube: string[][]): string[][] => {
+  let cubeNext = cloneDeep(cube)
+  cubeNext = rotateWithFace(cube, cubeNext, 1, true)
+  cubeNext = rotateWithConnection(cube, cubeNext, 3, [0, 3, 6], 0)
+  cubeNext = rotateWithConnection(cube, cubeNext, 5, [2, 5, 8], 2)
+  cubeNext = rotateWithConnection(cube, cubeNext, 2, [0, 1, 2], 3)
+  cubeNext = rotateWithConnection(cube, cubeNext, 0, [6, 7, 8], 5)
+  return cubeNext
 }

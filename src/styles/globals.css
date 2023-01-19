@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=M+PLUS+1&display=swap');
+
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -28,4 +30,8 @@ p, h1, h2, h3, h4, h5, h6 {
 
 #__next {
   isolation: isolate;
+}
+
+body {
+  font-family: 'M PLUS 1', sans-serif;
 }

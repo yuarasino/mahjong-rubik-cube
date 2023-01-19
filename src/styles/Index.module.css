@@ -1,19 +1,24 @@
+.header {
+  padding: 1rem 0;
+}
+
 .main {
-  height: 100wh;
+  padding: 0;
+}
+
+.footer {
+  padding: 1rem 0;
 }
 
 .container {
-  margin: 0 auto;
   padding: 0 1rem;
   width: 100%;
 }
 
 .title {
-  margin: 1rem 0;
   font-size: 1.5rem;
-  font-weight: 700;
 }
 
-.cubeWrapper {
-  margin: 1rem 0;
+.copy {
+  font-size: 0.9rem;
 }
