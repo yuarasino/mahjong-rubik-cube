@@ -19,6 +19,8 @@
 }
 
 .piece {
+  cursor: grab;
+  user-select: none;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -26,10 +28,14 @@
   height: 60px;
   border: 1px solid #777777;
   border-radius: 4px;
-  background-color: #fff;
+  background-color: #ffffff;
   font-weight: bold;
   font-size: 1.5rem;
   transform-origin: center center;
+}
+
+.piece:active {
+  cursor: grabbing;
 }
 
 .switch {

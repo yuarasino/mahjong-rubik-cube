@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { DragEvent, useState } from "react"
 
 import {
   getResetCube,
@@ -29,11 +29,16 @@ import {
   getRotateCubeSp,
   getRotateCubeB,
   getRotateCubeBp,
+  getRotateCubeDrag,
 } from "@/lib/cube"
 import styles from "@/styles/Cube.module.css"
 
+type CubeData = string[][]
+type DragData = { faceIndex: number; pieceIndex: number } | null
+
 const Cube = () => {
-  const [cube, setCube] = useState(getResetCube())
+  const [cube, setCube] = useState(getResetCube() as CubeData)
+  const [drag, setDrag] = useState(null as DragData)
 
   const resetCube = () => {
     setCube(getResetCube())
@@ -116,10 +121,30 @@ const Cube = () => {
     setCube(getRotateCubeBp(cube))
   }
 
+  const registerDrag = (data: DragData) => {
+    setDrag(data)
+  }
+  const applyDrag = (data: DragData) => {
+    if (drag === null || data === null) return
+    if (
+      drag.faceIndex === data.faceIndex &&
+      drag.pieceIndex === data.pieceIndex
+    )
+      return
+    setCube(getRotateCubeDrag(cube, drag, data))
+    setDrag(null)
+  }
+
   return (
     <div className={styles.cube}>
-      {cube.map((face, index) => (
-        <Face key={index} face={face} index={index} />
+      {cube.map((face, faceIndex) => (
+        <Face
+          key={faceIndex}
+          face={face}
+          faceIndex={faceIndex}
+          registerDrag={registerDrag}
+          applyDrag={applyDrag}
+        />
       ))}
 
       <SwitchButton
@@ -260,30 +285,59 @@ const Cube = () => {
   )
 }
 
-const Face = ({ face, index }: { face: string[]; index: number }) => {
+const Face = ({
+  face,
+  faceIndex,
+  registerDrag,
+  applyDrag,
+}: {
+  face: string[]
+  faceIndex: number
+  registerDrag: (data: DragData) => void
+  applyDrag: (data: DragData) => void
+}) => {
   const style = {
     transform:
       "translateX(-50%) translateY(-50%) rotateX(-45deg) rotateY(-45deg)",
   }
-  if (index === 0) {
+  if (faceIndex === 0) {
     style.transform += "rotateX(90deg)"
-  } else if (index === 1) {
+  } else if (faceIndex === 1) {
     style.transform += ""
-  } else if (index === 3) {
+  } else if (faceIndex === 3) {
     style.transform += "rotateY(90deg)"
   } else {
     return <></>
   }
   return (
     <div className={styles.face} style={style}>
-      {face.map((piece, index) => (
-        <Piece key={index} piece={piece} />
+      {face.map((piece, pieceIndex) => (
+        <Piece
+          key={pieceIndex}
+          piece={piece}
+          faceIndex={faceIndex}
+          pieceIndex={pieceIndex}
+          registerDrag={registerDrag}
+          applyDrag={applyDrag}
+        />
       ))}
     </div>
   )
 }
 
-const Piece = ({ piece }: { piece: string }) => {
+const Piece = ({
+  piece,
+  faceIndex,
+  pieceIndex,
+  registerDrag,
+  applyDrag,
+}: {
+  piece: string
+  faceIndex: number
+  pieceIndex: number
+  registerDrag: (data: DragData) => void
+  applyDrag: (data: DragData) => void
+}) => {
   const character = piece[0]
   const angle = getAngle(piece)
   const color = getColor(piece)
@@ -291,8 +345,33 @@ const Piece = ({ piece }: { piece: string }) => {
     color: color,
     transform: `rotateZ(${angle}deg)`,
   }
+  const onDragStart = (e: DragEvent<HTMLDivElement>) => {
+    const data = { faceIndex, pieceIndex }
+    const image = new Image()
+    e.dataTransfer.setDragImage(image, 0, 0)
+    registerDrag(data)
+  }
+  const onDragEnter = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    const data = { faceIndex, pieceIndex }
+    applyDrag(data)
+  }
+  const onDragOver = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+  }
+  const onDragEnd = () => {
+    registerDrag(null)
+  }
   return (
-    <div className={styles.piece} style={style}>
+    <div
+      className={styles.piece}
+      style={style}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+      onDragEnter={onDragEnter}
+      onDragOver={onDragOver}
+      draggable
+    >
       {character}
     </div>
   )
