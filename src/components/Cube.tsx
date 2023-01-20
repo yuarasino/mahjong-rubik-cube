@@ -1,10 +1,9 @@
 import { DragEvent, TouchEvent, useState } from "react"
-
 import {
   getResetCube,
   getShuffleCube,
+  getTile,
   getAngle,
-  getColor,
   getRotateCubeX,
   getRotateCubeXp,
   getRotateCubeY,
@@ -338,13 +337,19 @@ const Piece = ({
   registerDrag: (data: DragData) => void
   applyDrag: (data: DragData) => void
 }) => {
-  const character = piece[0]
+  const tile = getTile(piece)
   const angle = getAngle(piece)
-  const color = getColor(piece)
   const style = {
-    color: color,
     transform: `rotateZ(${angle}deg)`,
   }
+  const svgStyle =
+    tile === "z5"
+      ? {
+          border: "4px double #6666ff",
+          width: "30px",
+          height: "42px",
+        }
+      : {}
   const onDragStart = (e: DragEvent<HTMLDivElement>) => {
     const image = new Image()
     e.dataTransfer.setDragImage(image, 0, 0)
@@ -390,7 +395,9 @@ const Piece = ({
       data-face={faceIndex}
       data-piece={pieceIndex}
     >
-      {character}
+      <svg className="tile" style={svgStyle}>
+        <use className="face" xlinkHref={`/tiles.svg#${tile}`}></use>
+      </svg>
     </div>
   )
 }

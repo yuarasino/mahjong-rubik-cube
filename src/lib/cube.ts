@@ -357,6 +357,19 @@ export const getRotateCubeBp = (cube: string[][]): string[][] => {
   return cubeNext
 }
 
+export const getTile = (piece: string): string => {
+  const character = piece[0]
+  if ("一二三四五六七八九".includes(character)) {
+    return `m${"零一二三四五六七八九".indexOf(character)}`
+  } else if ("①②③④⑤⑥⑦⑧⑨".includes(character)) {
+    return `p${"零①②③④⑤⑥⑦⑧⑨".indexOf(character)}`
+  } else if ("１２３４５６７８９".includes(character)) {
+    return `s${"零１２３４５６７８９".indexOf(character)}`
+  } else {
+    return `z${"零東南西北白發中".indexOf(character)}`
+  }
+}
+
 export const getRotateCubeDrag = (
   cube: string[][],
   fromFace: number,

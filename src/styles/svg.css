@@ -1,0 +1,10 @@
+.tile {
+  width: 36px;
+  height: 49px;
+  vertical-align: text-bottom;
+  pointer-events: none;
+}
+
+.face {
+  fill: #ffffff;
+}
