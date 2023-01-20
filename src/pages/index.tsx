@@ -26,7 +26,16 @@ const Index = () => {
       </main>
       <footer className={styles.footer}>
         <div className={styles.container}>
-          <p className={styles.copy}>&copy; 新篠ゆう</p>
+          <p className={styles.copy}>
+            &copy; 新篠ゆう&nbsp;
+            <a
+              href="https://github.com/yuarasino/mahjong-rubik-cube"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              ソースコード
+            </a>
+          </p>
         </div>
       </footer>
     </>
