@@ -274,12 +274,12 @@ const Cube = () => {
         transform="translateX(-230px) translateY(-270px)"
         onClick={shuffleCube}
       />
-      <ActionButton
+      {/* <ActionButton
         key={"Reset"}
         label={"リセット"}
         transform="translateX(230px) translateY(-270px)"
         onClick={resetCube}
-      />
+      /> */}
     </div>
   )
 }
